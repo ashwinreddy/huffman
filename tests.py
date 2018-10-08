@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+"""
+Defines tests for Huffman encoding
+"""
+
 import unittest
 import yaml
 import huffman

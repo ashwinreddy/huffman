@@ -1,13 +1,34 @@
+#!/usr/bin/env python
+"""
+Defines Huffman Encoding Algorithm
+"""
+
 class HuffmanTree(object):
-    def __init__(self, children, base = 2):
+    """
+    Defines a tree which may recursively include other trees. 
+    The top node is capable of encoding and decoding messages.
+    """
+
+    def __init__(self, children: list, base: int = 2):
+        """
+        Create a tree with base nodes and initialize them with the children list
+        """
+        # check that the length of the list is equal to the "base" of the tree
         assert len(children) == base
+        # initialize object properties
         self._children = children
         self._base = base
     
+
     def __str__(self):
+        """
+        Generates a user-readable string representing the tree
+        """
         string_repr = ""
+        # Loop through each children
         for idx, children in enumerate(self._children):
-            string_repr += str(children) + (", " if idx != len(self._children) - 1 else "")
+            # Generate a string for the children and add it to the 
+            string_repr += str(children) + (", " if idx != len(self._children) - 1 else "") # Add a comma if there are more elements to come
         return "Tree({})".format(string_repr)
     
     def __repr__(self):
@@ -59,9 +80,3 @@ def buildHuffmanTree(weights, base):
     
     [(tree, _ )] = weights.items()
     return tree
-
-# for i in [2,3,4,5]:
-#     tree = buildHuffmanTree(weights, i)
-#     print(tree)
-#     # print(tree.encode_message("12345"))
-#     assert("5123312124" == tree.decode_message(tree.encode_message("5123312124")))
