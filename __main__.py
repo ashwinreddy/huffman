@@ -3,9 +3,15 @@
 Runs tests for Huffman Tree
 """
 
-import nose
+import huffman
+import copy
+import yaml
 
 if __name__ == "__main__":
-    print("Running Tests...")
-    nose.main()
-
+    with open('symbols.yaml') as f:
+        config = yaml.load(f)
+        symbol_weights, base, test_message_length = config['symbol_weights'], config['base'], config['test_message_length']
+        probability_map = copy.copy(symbol_weights)
+        symbols = list(symbol_weights.keys())
+        tree = huffman.buildHuffmanTree(symbol_weights, base)
+        print("Huffman Tree", tree)
