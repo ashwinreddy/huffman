@@ -2,6 +2,63 @@
 """
 Defines Huffman Encoding Algorithm
 """
+import numpy as np
+
+argmin = lambda x: min(x, key=x.get)
+
+class ProbabilityMap(object):
+    def __init__(self, probs):
+        total_weights = sum(probs.values())
+        self.probs = { key : probs[key] / total_weights for key in probs }
+    
+    @property
+    def entropy(self):
+        p = np.array(list(self.probs.values()))
+        return - p @ np.log(p)
+    
+    def keys(self):
+        return list(self.probs.keys())
+    
+    def __getitem__(self, key):
+        return self.probs[key]
+    
+
+class Weights(object):
+    def __init__(self, weights):
+        self.weights = weights
+    
+    def __len__(self):
+        return len(self.weights)
+    
+    def pop_least_frequent_symbol(self):
+        symbol = argmin(self.weights)
+        weight = self.weights[symbol]
+        del self.weights[symbol]
+        return symbol, weight
+    
+    def buildTree(self, base):
+        x = 1
+        while ( len(self) - 1 ) % (base - 1) != 0:
+            self.weights['null{}'.format(x)] = 0
+            x += 1
+
+        value = 0
+        while len(self) > 1:
+            stack = [None for _ in range(base)]
+            total_weight = 0
+            i = 0
+            while i < base and len(self) != 0:
+                last_symbol, last_weight = self.pop_least_frequent_symbol()
+                stack[i] = last_symbol
+                total_weight += last_weight
+                i += 1
+            new_symbol = HuffmanTree(stack, base=base)
+            self.weights[new_symbol] = total_weight
+            value += total_weight
+        print("Weights add up to", value)
+        
+        [(tree, _ )] = self.weights.items()
+        return tree
 
 class HuffmanTree(object):
     """
@@ -56,35 +113,3 @@ class HuffmanTree(object):
     
     def encode_message(self, message):
         return "".join([self.encode(char) for char in message])
-        
-argmin = lambda x: min(x, key=x.get)
-
-def pop_least_frequent_symbol(weights):
-    symbol = argmin(weights)
-    weight = weights[symbol]
-    del weights[symbol]
-    return symbol, weight
-
-def buildHuffmanTree(weights, base):
-    x = 1
-    while (len(weights)-1) % (base - 1) != 0:
-        weights['null{}'.format(x)] = 0
-        x+=1
-
-    value = 0
-    while len(weights) > 1:
-        stack = [None for _ in range(base)]
-        total_weight = 0
-        i = 0
-        while i < base and len(weights) != 0:
-            last_symbol, last_weight = pop_least_frequent_symbol(weights)
-            stack[i] = last_symbol
-            total_weight += last_weight
-            i += 1
-        new_symbol = HuffmanTree(stack, base=base)
-        weights[new_symbol] = total_weight
-        value += total_weight
-    print("Weights add up to", value)
-    
-    [(tree, _ )] = weights.items()
-    return tree

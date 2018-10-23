@@ -13,5 +13,5 @@ if __name__ == "__main__":
         symbol_weights, base, test_message_length = config['symbol_weights'], config['base'], config['test_message_length']
         probability_map = copy.copy(symbol_weights)
         symbols = list(symbol_weights.keys())
-        tree = huffman.buildHuffmanTree(symbol_weights, base)
+        tree = huffman.Weights(symbol_weights).buildTree(base)
         print("Huffman Tree: ", tree)

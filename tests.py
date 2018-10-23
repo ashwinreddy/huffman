@@ -9,6 +9,7 @@ import huffman
 import random
 import copy
 import math
+import numpy as np
 
 def expected_word_length(tree, symbols, probability_map):
     expectation = 0
@@ -16,33 +17,34 @@ def expected_word_length(tree, symbols, probability_map):
         expectation += len(tree.encode(symbol)) * probability_map[symbol]
     return expectation
 
-def entropy(probability_map, base):
-    entropy = 0
-    for _, prob in probability_map.items():
-        entropy -= prob * math.log(prob, base)
-    return entropy
-
 class TestHuffmanTree(unittest.TestCase):
     def setUp(self):
         with open('symbols.yaml') as f:
             config = yaml.load(f)
         self.symbol_weights, self.base, self.test_message_length = config['symbol_weights'], config['base'], config['test_message_length']
-        self.probability_map = copy.copy(self.symbol_weights)
         
-        total_weights = sum(self.probability_map.values())
-        self.probability_map = { key : self.probability_map[key] / total_weights for key in self.probability_map }
-
-        self.symbols = list(self.symbol_weights.keys())
-        self.tree = huffman.buildHuffmanTree(self.symbol_weights, self.base)
+        self.probability_map    = huffman.ProbabilityMap(self.symbol_weights)
+        self.symbols            = self.probability_map.keys()
+        self.tree               = huffman.Weights(self.symbol_weights).buildTree(self.base)
     
     def test_encoding(self):
-        symbols = random.choices(self.symbols, k = self.test_message_length)
-        message = "".join(symbols)
+        """
+        Tests that decode-encode composition returns identity.
+        """
+        # Create a message of given length by stringing together randomly chosen symbols
+        message = "".join(random.choices(self.symbols, k = self.test_message_length))
+        # assert that the message is returned when encoded and then decoded
         self.assertEqual(message, self.tree.decode_message(self.tree.encode_message(message)))
     
     def test_optimality(self):
+        """
+        Tests that Huffman coding is optimal (i.e. within 1 bit of entropy)
+        """
+        # compute expected word length
         ewl = expected_word_length(self.tree, self.symbols, self.probability_map)
-        its = entropy(self.probability_map, self.base)
+        # compute entropy (result needs to be converted into the correct base)
+        its = self.probability_map.entropy / np.log(self.base)
+        # assert that the E[L] is within 1 bit of entropy
         self.assertTrue(its <= ewl <= its + 1)
 
 if __name__ == "__main__":
