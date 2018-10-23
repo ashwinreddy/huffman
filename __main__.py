@@ -14,4 +14,4 @@ if __name__ == "__main__":
         probability_map = copy.copy(symbol_weights)
         symbols = list(symbol_weights.keys())
         tree = huffman.buildHuffmanTree(symbol_weights, base)
-        print("Huffman Tree", tree)
+        print("Huffman Tree: ", tree)

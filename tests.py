@@ -28,6 +28,10 @@ class TestHuffmanTree(unittest.TestCase):
             config = yaml.load(f)
         self.symbol_weights, self.base, self.test_message_length = config['symbol_weights'], config['base'], config['test_message_length']
         self.probability_map = copy.copy(self.symbol_weights)
+        
+        total_weights = sum(self.probability_map.values())
+        self.probability_map = { key : self.probability_map[key] / total_weights for key in self.probability_map }
+
         self.symbols = list(self.symbol_weights.keys())
         self.tree = huffman.buildHuffmanTree(self.symbol_weights, self.base)
     

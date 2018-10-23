@@ -66,7 +66,7 @@ def pop_least_frequent_symbol(weights):
     return symbol, weight
 
 def buildHuffmanTree(weights, base):
-    x=1
+    x = 1
     while (len(weights)-1) % (base - 1) != 0:
         weights['null{}'.format(x)] = 0
         x+=1
